@@ -1,4 +1,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+
+include("CMakeModules/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.12.46.tar.gz"
+    SHA1 "cf8fe23e6491707247f4158bdbd0f14037a581c1"
+)
+
 PROJECT(ArrayFire VERSION 3.3)
 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
