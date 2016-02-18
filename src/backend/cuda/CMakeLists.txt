@@ -1,7 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 FIND_PACKAGE(CUDA REQUIRED)
-FIND_PACKAGE(Boost REQUIRED)
+
+hunter_add_package(Boost)
+find_package(Boost CONFIG REQUIRED)
 
 INCLUDE("${CMAKE_MODULE_PATH}/CLKernelToH.cmake")
 INCLUDE("${CMAKE_MODULE_PATH}/FindNVVM.cmake")
@@ -125,7 +127,6 @@ ENDIF(CUDA_cusolver_LIBRARY)
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_INCLUDE_PATH}
-    ${Boost_INCLUDE_DIR}
     ${CUDA_INCLUDE_DIRS}
     "${CMAKE_SOURCE_DIR}/src/backend/cuda"
     "${CMAKE_CURRENT_BINARY_DIR}"
@@ -321,7 +322,8 @@ TARGET_LINK_LIBRARIES(afcuda    PRIVATE ${CUDA_CUBLAS_LIBRARIES}
                                 PRIVATE ${FreeImage_LIBS}
                                 PRIVATE ${CUDA_CUFFT_LIBRARIES}
                                 PRIVATE ${CUDA_NVVM_LIBRARIES}
-                                PRIVATE ${CUDA_CUDA_LIBRARY})
+                                PRIVATE ${CUDA_CUDA_LIBRARY}
+                                PRIVATE $<BUILD_INTERFACE:Boost::boost>)
 
 IF(FORGE_FOUND)
     TARGET_LINK_LIBRARIES(afcuda PRIVATE ${FORGE_LIBRARIES})

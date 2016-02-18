@@ -1,9 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
-PROJECT(ARRAYFIRE)
 
 FIND_PACKAGE(OpenCL REQUIRED)
 
-INCLUDE("${CMAKE_MODULE_PATH}/CLKernelToH.cmake")
+INCLUDE("${ArrayFire_SOURCE_DIR}/CMakeModules/CLKernelToH.cmake")
 
 IF(USE_OPENCL_F77_BLAS)
     MESSAGE("Using F77 BLAS")
@@ -57,7 +56,7 @@ OPTION(USE_SYSTEM_CLBLAS "Use system clBLAS" OFF)
 IF(USE_SYSTEM_CLBLAS)
     FIND_PACKAGE(clBLAS REQUIRED)
 ELSE()
-    INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
+    INCLUDE("${ArrayFire_SOURCE_DIR}/CMakeModules/build_clBLAS.cmake")
 ENDIF()
 INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
 LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
@@ -66,21 +65,13 @@ OPTION(USE_SYSTEM_CLFFT "Use system clFFT" OFF)
 IF(USE_SYSTEM_CLFFT)
     FIND_PACKAGE(clFFT REQUIRED)
 ELSE()
-    INCLUDE("${CMAKE_MODULE_PATH}/build_clFFT.cmake")
+    INCLUDE("${ArrayFire_SOURCE_DIR}/CMakeModules/build_clFFT.cmake")
 ENDIF()
 INCLUDE_DIRECTORIES(${CLFFT_INCLUDE_DIRS})
 LINK_DIRECTORIES(${CLFFT_LIBRARY_DIR})
 
-ADD_DEFINITIONS( -DBOOST_ALL_NO_LIB )
-SET(Boost_USE_STATIC_LIBS OFF)
-FIND_PACKAGE(Boost 1.48 REQUIRED)
-
-OPTION(USE_SYSTEM_BOOST_COMPUTE "Use system BoostCompute" OFF)
-IF(USE_SYSTEM_BOOST_COMPUTE)
-    FIND_PACKAGE(BoostCompute REQUIRED)
-ELSE()
-    INCLUDE("${CMAKE_MODULE_PATH}/build_boost_compute.cmake")
-ENDIF()
+hunter_add_package(BoostCompute)
+find_package(BoostCompute CONFIG REQUIRED)
 
 SET( cl_kernel_headers
     "kernel_headers")
@@ -92,8 +83,6 @@ INCLUDE_DIRECTORIES(
     "${CMAKE_CURRENT_BINARY_DIR}"
     ${CLBLAS_INCLUDE_DIRS}
     ${CLFFT_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIR}
-    ${BoostCompute_INCLUDE_DIRS}
     ${CBLAS_INCLUDE_DIR}
     )
 IF(LAPACK_FOUND)
@@ -274,7 +263,8 @@ TARGET_LINK_LIBRARIES(afopencl
                                 PRIVATE ${CLBLAS_LIBRARIES}
                                 PRIVATE ${CLFFT_LIBRARIES}
                                 PRIVATE ${CMAKE_DL_LIBS}
-                                PRIVATE ${Boost_LIBRARIES})
+                                PRIVATE ${Boost_LIBRARIES}
+                                PRIVATE $<BUILD_INTERFACE:BoostCompute::boost_compute>)
 
 IF(FORGE_FOUND AND NOT USE_SYSTEM_FORGE)
     ADD_DEPENDENCIES(afopencl forge)

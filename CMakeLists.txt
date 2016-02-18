@@ -301,7 +301,7 @@ IF(ARRAYFIRE_INSTALL_EXAMPLES)
 ENDIF()
 
 IF(APPLE)
-    INCLUDE("${CMAKE_MODULE_PATH}/osx_install/OSXInstaller.cmake")
+    INCLUDE("${CMAKE_CURRENT_LIST_DIR}/CMakeModules/osx_install/OSXInstaller.cmake")
 ENDIF(APPLE)
 
 ##
