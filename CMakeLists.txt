@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(ARRAYFIRE)
+PROJECT(ArrayFire VERSION 3.3)
 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -166,6 +166,52 @@ target_architecture(ARCH)
 
 INCLUDE(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/Version.cmake)
 
+####
+# Installation (https://github.com/forexample/package-example)
+
+# Layout. This works for all platforms:
+#   * <prefix>/lib/cmake/<PROJECT-NAME>
+#   * <prefix>/lib/
+#   * <prefix>/include/
+set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+set(include_install_dir "include")
+
+set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
+# Configuration
+set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
+set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
+set(targets_export_name "${PROJECT_NAME}Targets")
+set(namespace "${PROJECT_NAME}::")
+
+# Include module with fuction 'write_basic_package_version_file'
+include(CMakePackageConfigHelpers)
+
+# Note: PROJECT_VERSION is used as a VERSION
+write_basic_package_version_file(
+    "${version_config}" COMPATIBILITY SameMajorVersion
+)
+
+# Use variables:
+#   * targets_export_name
+#   * PROJECT_NAME
+configure_package_config_file(
+    "${CMAKE_CURRENT_LIST_DIR}/CMakeModules/Config.cmake.in"
+    "${project_config}"
+    INSTALL_DESTINATION "${config_install_dir}"
+)
+
+install(
+    FILES "${project_config}" "${version_config}"
+    DESTINATION "${config_install_dir}"
+)
+
+install(
+    EXPORT "${targets_export_name}"
+    NAMESPACE "${namespace}"
+    DESTINATION "${config_install_dir}"
+)
+
 IF(${BUILD_CPU})
     ADD_SUBDIRECTORY(src/backend/cpu)
 ENDIF()
@@ -225,28 +271,12 @@ ENDIF(FORGE_FOUND AND NOT USE_SYSTEM_FORGE)
 ## configuration to be used from the binary directory directly
 SET(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 SET(BACKEND_DIR "src/backend/\${lowerbackend}")
-CONFIGURE_FILE(
-    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ArrayFireConfig.cmake
-    @ONLY)
 
 ## installed cmake configuration
 # use a relative dir to keep arrayfire relocatable
 STRING(REGEX REPLACE "[^/]+" ".." reldir "${AF_INSTALL_CMAKE_DIR}")
 SET(INCLUDE_DIR "\${CMAKE_CURRENT_LIST_DIR}/${reldir}/include")
 set(BACKEND_DIR)
-CONFIGURE_FILE(
-    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Install/ArrayFireConfig.cmake
-    @ONLY)
-CONFIGURE_FILE(
-    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfigVersion.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ArrayFireConfigVersion.cmake
-    @ONLY)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Install/ArrayFireConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/ArrayFireConfigVersion.cmake
-    DESTINATION ${AF_INSTALL_CMAKE_DIR}
-    COMPONENT cmake)
 
 IF(ARRAYFIRE_INSTALL_EXAMPLES)
   # install the examples irrespective of the BUILD_EXAMPLES value

@@ -188,14 +188,18 @@ SET_TARGET_PROPERTIES(afcpu PROPERTIES
                       VERSION "${AF_VERSION}"
                       SOVERSION "${AF_VERSION_MAJOR}")
 
-INSTALL(TARGETS afcpu EXPORT CPU DESTINATION "${AF_INSTALL_LIB_DIR}"
-        COMPONENT libraries)
-
 IF(APPLE)
     INSTALL(SCRIPT "${CMAKE_MODULE_PATH}/osx_install/InstallTool.cmake")
 ENDIF(APPLE)
 
-export(TARGETS afcpu FILE ArrayFireCPU.cmake)
-INSTALL(EXPORT CPU DESTINATION "${AF_INSTALL_CMAKE_DIR}"
-        COMPONENT cmake
-        FILE ArrayFireCPU.cmake)
+####
+# Installation (https://github.com/forexample/package-example)
+
+install(
+    TARGETS afcpu
+    EXPORT "${targets_export_name}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${include_install_dir}"
+)

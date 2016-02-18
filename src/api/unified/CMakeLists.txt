@@ -59,14 +59,18 @@ SET_TARGET_PROPERTIES(af PROPERTIES
                       VERSION "${AF_VERSION}"
                       SOVERSION "${AF_VERSION_MAJOR}")
 
-INSTALL(TARGETS af EXPORT AF DESTINATION "${AF_INSTALL_LIB_DIR}"
-        COMPONENT libraries)
-
 IF(APPLE)
     INSTALL(SCRIPT "${CMAKE_MODULE_PATH}/osx_install/InstallTool.cmake")
 ENDIF(APPLE)
 
-EXPORT(TARGETS af FILE ArrayFireUnified.cmake)
-INSTALL(EXPORT AF DESTINATION "${AF_INSTALL_CMAKE_DIR}"
-        COMPONENT cmake
-        FILE ArrayFireUnified.cmake)
+####
+# Installation (https://github.com/forexample/package-example)
+
+install(
+    TARGETS af
+    EXPORT "${targets_export_name}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${include_install_dir}"
+)
