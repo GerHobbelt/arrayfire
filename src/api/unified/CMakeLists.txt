@@ -34,7 +34,7 @@ IF(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -Wno-comment")
 ENDIF()
 
-ADD_LIBRARY(af SHARED
+ADD_LIBRARY(af
             ${unified_headers}
             ${unified_sources}
             ${common_sources}
