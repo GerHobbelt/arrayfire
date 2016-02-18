@@ -160,7 +160,7 @@ TARGET_LINK_LIBRARIES(afcpu
                             PRIVATE ${FreeImage_LIBS}
                             PRIVATE ${CBLAS_LIBRARIES}
                             PRIVATE ${FFTW_LIBRARIES}
-                            PRIVATE AllTheFlopsThreads::all_the_flops_threads)
+                            PRIVATE $<BUILD_INTERFACE:AllTheFlopsThreads::all_the_flops_threads>)
 
 IF(FORGE_FOUND AND NOT USE_SYSTEM_FORGE)
   ADD_DEPENDENCIES(afcpu forge)
