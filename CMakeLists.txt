@@ -4,7 +4,7 @@ PROJECT(ARRAYFIRE)
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
-INCLUDE(${CMAKE_MODULE_PATH}/UploadCoveralls.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/UploadCoveralls.cmake)
 INCLUDE(AFInstallDirs)
 
 OPTION(BUILD_TEST "Build Tests" ON)
@@ -42,7 +42,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 OPTION(MIN_BUILD_TIME "This flag compiles ArrayFire with O0, which is the fastest way to compile" OFF)
-INCLUDE(${CMAKE_MODULE_PATH}/MinBuildTime.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/MinBuildTime.cmake)
 
 FIND_PACKAGE(FreeImage)
 IF(FREEIMAGE_FOUND)
@@ -159,10 +159,10 @@ ELSE(${UNIX}) #Windows
 ENDIF()
 
 # Architechture Definitions
-INCLUDE(${CMAKE_MODULE_PATH}/TargetArch.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/TargetArch.cmake)
 target_architecture(ARCH)
 
-INCLUDE(${CMAKE_MODULE_PATH}/Version.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/Version.cmake)
 
 IF(${BUILD_CPU})
     ADD_SUBDIRECTORY(src/backend/cpu)
@@ -224,7 +224,7 @@ ENDIF(FORGE_FOUND AND NOT USE_SYSTEM_FORGE)
 SET(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 SET(BACKEND_DIR "src/backend/\${lowerbackend}")
 CONFIGURE_FILE(
-    ${CMAKE_MODULE_PATH}/ArrayFireConfig.cmake.in
+    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/ArrayFireConfig.cmake
     @ONLY)
 
@@ -234,11 +234,11 @@ STRING(REGEX REPLACE "[^/]+" ".." reldir "${AF_INSTALL_CMAKE_DIR}")
 SET(INCLUDE_DIR "\${CMAKE_CURRENT_LIST_DIR}/${reldir}/include")
 set(BACKEND_DIR)
 CONFIGURE_FILE(
-    ${CMAKE_MODULE_PATH}/ArrayFireConfig.cmake.in
+    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/Install/ArrayFireConfig.cmake
     @ONLY)
 CONFIGURE_FILE(
-    ${CMAKE_MODULE_PATH}/ArrayFireConfigVersion.cmake.in
+    ${CMAKE_CURRENT_LIST_DIR}/CMakeModules/ArrayFireConfigVersion.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/ArrayFireConfigVersion.cmake
     @ONLY)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Install/ArrayFireConfig.cmake
@@ -266,4 +266,4 @@ ENDIF(APPLE)
 ##
 # Packaging
 ##
-include(${CMAKE_MODULE_PATH}/CPackConfig.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeModules/CPackConfig.cmake)
