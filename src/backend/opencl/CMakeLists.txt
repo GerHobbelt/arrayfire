@@ -52,14 +52,8 @@ ENDIF()
 ADD_DEFINITIONS(-DAF_OPENCL
                 -D__CL_ENABLE_EXCEPTIONS)
 
-OPTION(USE_SYSTEM_CLBLAS "Use system clBLAS" OFF)
-IF(USE_SYSTEM_CLBLAS)
-    FIND_PACKAGE(clBLAS REQUIRED)
-ELSE()
-    INCLUDE("${ArrayFire_SOURCE_DIR}/CMakeModules/build_clBLAS.cmake")
-ENDIF()
-INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
-LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
+hunter_add_package(clBLAS)
+find_package(clBLAS CONFIG REQUIRED)
 
 OPTION(USE_SYSTEM_CLFFT "Use system clFFT" OFF)
 IF(USE_SYSTEM_CLFFT)
@@ -81,7 +75,6 @@ INCLUDE_DIRECTORIES(
     "${CMAKE_SOURCE_DIR}/src/backend/opencl"
     ${OpenCL_INCLUDE_DIRS}
     "${CMAKE_CURRENT_BINARY_DIR}"
-    ${CLBLAS_INCLUDE_DIRS}
     ${CLFFT_INCLUDE_DIRS}
     ${CBLAS_INCLUDE_DIR}
     )
@@ -264,6 +257,7 @@ TARGET_LINK_LIBRARIES(afopencl
                                 PRIVATE ${CLFFT_LIBRARIES}
                                 PRIVATE ${CMAKE_DL_LIBS}
                                 PRIVATE ${Boost_LIBRARIES}
+                                PRIVATE clBLAS::clBLAS
                                 PRIVATE $<BUILD_INTERFACE:BoostCompute::boost_compute>)
 
 IF(FORGE_FOUND AND NOT USE_SYSTEM_FORGE)
