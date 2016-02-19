@@ -60,7 +60,7 @@ SET_TARGET_PROPERTIES(af PROPERTIES
                       SOVERSION "${AF_VERSION_MAJOR}")
 
 IF(APPLE)
-    INSTALL(SCRIPT "${CMAKE_MODULE_PATH}/osx_install/InstallTool.cmake")
+    INSTALL(SCRIPT "${ArrayFire_SOURCE_DIR}/CMakeModules/osx_install/InstallTool.cmake")
 ENDIF(APPLE)
 
 ####
