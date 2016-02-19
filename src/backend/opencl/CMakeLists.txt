@@ -284,8 +284,3 @@ INSTALL(TARGETS afopencl EXPORT OpenCL DESTINATION "${AF_INSTALL_LIB_DIR}"
 IF(APPLE)
     INSTALL(SCRIPT "${ArrayFire_SOURCE_DIR}/CMakeModules/osx_install/InstallTool.cmake")
 ENDIF(APPLE)
-
-export(TARGETS afopencl FILE ArrayFireOpenCL.cmake)
-INSTALL(EXPORT OpenCL DESTINATION "${AF_INSTALL_CMAKE_DIR}"
-    COMPONENT cmake
-    FILE ArrayFireOpenCL.cmake)
