@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <af/version.h>
 
 using std::string;
 using std::replace;
@@ -25,12 +26,15 @@ static const string LIB_AF_BKND_PREFIX = "af";
 static const string LIB_AF_BKND_SUFFIX = ".dll";
 #define RTLD_LAZY 0
 #else
-static const string LIB_AF_BKND_PREFIX = "libaf";
 #if defined(__APPLE__)
-static const string LIB_AF_BKND_SUFFIX = ".dylib";
+#define SO_SUFFIX_HELPER(VER) "." #VER ".dylib"
 #else
-static const string LIB_AF_BKND_SUFFIX = ".so";
+#define SO_SUFFIX_HELPER(VER) ".so." #VER
 #endif // APPLE
+static const string LIB_AF_BKND_PREFIX = "libaf";
+
+#define GET_SO_SUFFIX(VER) SO_SUFFIX_HELPER(VER)
+static const string LIB_AF_BKND_SUFFIX = GET_SO_SUFFIX(AF_VERSION_MAJOR);
 #endif
 
 static const string LIB_AF_ENVARS[NUM_ENV_VARS] = {"AF_PATH", "AF_BUILD_PATH"};
@@ -203,8 +207,9 @@ af_err AFSymbolManager::setBackend(af::Backend bknd)
             activeHandle = defaultHandle;
             activeBackend = defaultBackend;
             return AF_SUCCESS;
-        } else
-            return AF_ERR_LOAD_LIB;
+        } else {
+            UNIFIED_ERROR_LOAD_LIB();
+        }
     }
     int idx = bknd >> 1;    // Convert 1, 2, 4 -> 0, 1, 2
     if(bkndHandles[idx]) {
@@ -212,7 +217,7 @@ af_err AFSymbolManager::setBackend(af::Backend bknd)
         activeBackend = bknd;
         return AF_SUCCESS;
     } else {
-        return AF_ERR_LOAD_LIB;
+        UNIFIED_ERROR_LOAD_LIB();
     }
 }
 

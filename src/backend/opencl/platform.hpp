@@ -21,7 +21,7 @@ namespace opencl
 
 class DeviceManager
 {
-    friend std::string getInfo();
+    friend std::string getDeviceInfo();
 
     friend int getDeviceCount();
 
@@ -92,7 +92,7 @@ class DeviceManager
 
 int getBackend();
 
-std::string getInfo();
+std::string getDeviceInfo();
 
 int getDeviceCount();
 
@@ -114,7 +114,7 @@ cl_device_type getDeviceType();
 
 bool isHostUnifiedMemory(const cl::Device &device);
 
-bool OpenCLCPUOffload();
+bool OpenCLCPUOffload(bool forceOffloadOSX = true);
 
 bool isGLSharingSupported();
 

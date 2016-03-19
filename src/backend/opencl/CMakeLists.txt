@@ -9,13 +9,26 @@ IF(USE_OPENCL_F77_BLAS)
     ADD_DEFINITIONS(-DUSE_F77_BLAS)
 ENDIF()
 
-IF(USE_OPENCL_MKL)
-    MESSAGE("Using MKL")
+IF(USE_OPENCL_MKL) # Manual MKL Setup
+    MESSAGE("OpenCL Backend Using MKL")
     ADD_DEFINITIONS(-DUSE_MKL)
+ELSE(USE_OPENCL_MKL)
+    IF(${MKL_FOUND}) # Automatic MKL Setup from BLAS
+        MESSAGE("OpenCL Backend Using MKL RT")
+        ADD_DEFINITIONS(-DUSE_MKL)
+    ENDIF()
 ENDIF()
 
 IF(APPLE)
-    FIND_PACKAGE(LAPACK)
+    FIND_PACKAGE(LAPACKE QUIET) # For finding MKL
+    IF(NOT LAPACK_FOUND)
+        # UNSET THE VARIABLES FROM LAPACKE
+        UNSET(LAPACKE_LIB CACHE)
+        UNSET(LAPACK_LIB CACHE)
+        UNSET(LAPACKE_INCLUDES CACHE)
+        UNSET(LAPACKE_ROOT_DIR CACHE)
+        FIND_PACKAGE(LAPACK)
+    ENDIF()
 ELSE(APPLE) # Linux and Windows
     FIND_PACKAGE(LAPACKE)
 ENDIF(APPLE)
@@ -39,10 +52,6 @@ ELSE(NOT LAPACK_FOUND)
       MESSAGE(STATUS "Using CBLAS Library: ${CBLAS_LIBRARIES}")
     ENDIF()
   ENDIF()
-ENDIF()
-
-IF(${MKL_FOUND})
-  ADD_DEFINITIONS(-DUSE_MKL)
 ENDIF()
 
 IF(NOT UNIX)
@@ -115,6 +124,17 @@ FILE(GLOB cpu_headers
 FILE(GLOB cpu_sources
      "cpu/*.cpp")
 
+LIST(SORT opencl_headers)
+LIST(SORT opencl_sources)
+LIST(SORT jit_sources)
+LIST(SORT kernel_headers)
+LIST(SORT opencl_kernels)
+LIST(SORT kernel_sources)
+LIST(SORT conv_ker_headers)
+LIST(SORT conv_ker_sources)
+LIST(SORT cpu_headers)
+LIST(SORT cpu_sources)
+
 source_group(backend\\opencl\\Headers FILES ${opencl_headers})
 source_group(backend\\opencl\\Sources FILES ${opencl_sources})
 source_group(backend\\opencl\\JIT FILES ${jit_sources})
@@ -133,6 +153,9 @@ IF(LAPACK_FOUND)
     FILE(GLOB magma_headers
         "magma/*.h")
 
+    LIST(SORT magma_headers)
+    LIST(SORT magma_sources)
+
     source_group(backend\\opencl\\magma\\Sources FILES ${magma_sources})
     source_group(backend\\opencl\\magma\\Headers FILES ${magma_headers})
 ELSE()
@@ -148,6 +171,10 @@ FILE(GLOB backend_headers
 FILE(GLOB backend_sources
     "../*.cpp"
     )
+
+LIST(SORT backend_headers)
+LIST(SORT backend_sources)
+
 source_group(backend\\Headers FILES ${backend_headers})
 source_group(backend\\Sources FILES ${backend_sources})
 
@@ -159,16 +186,24 @@ FILE(GLOB c_headers
 FILE(GLOB c_sources
     "../../api/c/*.cpp"
     )
+
+LIST(SORT c_headers)
+LIST(SORT c_sources)
+
 source_group(api\\c\\Headers FILES ${c_headers})
 source_group(api\\c\\Sources FILES ${c_sources})
-
 
 FILE(GLOB cpp_sources
     "../../api/cpp/*.cpp"
     )
+
+LIST(SORT cpp_sources)
+
 source_group(api\\cpp\\Sources FILES ${cpp_sources})
 
 FILE(GLOB kernel_src ${opencl_kernels} "kernel/KParam.hpp")
+
+LIST(SORT kernel_src)
 
 CL_KERNEL_TO_H(
     SOURCES ${kernel_src}
